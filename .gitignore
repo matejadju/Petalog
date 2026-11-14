@@ -30,6 +30,8 @@ build/
 
 # ===== Tests (Vitest) =====
 coverage/
+frontend/coverage/
+backend/coverage/
 
 # ===== Logs and temp files =====
 logs/
