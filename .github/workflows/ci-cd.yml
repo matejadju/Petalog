@@ -163,6 +163,7 @@ jobs:
           name: backend-coverage
           path: backend/coverage/
           if-no-files-found: error
+  
   deploy:
     name: deploy
     runs-on: ubuntu-latest
@@ -176,6 +177,10 @@ jobs:
     environment:
       name: production
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Download production package
         uses: actions/download-artifact@v4
@@ -183,10 +188,17 @@ jobs:
           name: production-package
           path: deployment
 
-      - name: Deploy to Azure App Service
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Petalog to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deployment/release.zip
+
 
