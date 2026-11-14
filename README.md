@@ -167,3 +167,25 @@ Projekt sledi strategiji [GitHub Flow](https://docs.github.com/en/get-started/us
 4. Po pregledu PR združi (merge) in izbriši vejo.
 
 Veja `main` je zaščitena: neposredni push, prisilno prepisovanje zgodovine in brisanje veje niso dovoljeni.
+
+## CI/CD cevovod
+
+Projekt uporablja GitHub Actions za samodejno preverjanje kode, gradnjo, testiranje in namestitev aplikacije.
+
+**Status cevovoda:**
+
+[![Petalog CI/CD](https://github.com/matejadju/Petalog/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/matejadju/Petalog/actions/workflows/ci-cd.yml)
+
+**Nameščena aplikacija:** [Petalog na Azure App Service](https://petalog-rirs-eba9fuepfdgwf7fu.italynorth-01.azurewebsites.net/)
+
+Cevovod sestavljajo štiri opravila:
+
+- **Lint:** ESLint preveri slog in kakovost kode v frontendu in backendu.
+- **Build:** zgradi React frontend in TypeScript backend, uporabi predpomnjenje odvisnosti ter pripravi artefakte za namestitev.
+- **Test:** izvede 15 frontend in 156 backend testov ter shrani poročili o pokritosti kode.
+- **Deploy:** ob spremembi veje `main` po uspešnih preverjanjih prenese pripravljeni artefakt in namesti aplikacijo v Azure App Service. Za prijavo v Azure uporablja OIDC.
+
+Opravila `lint`, `build` in `test` se izvedejo ob vsakem pull requestu v vejo `main` in ob vsakem pushu v `main`. Opravilo `deploy` se izvede samo ob pushu v `main`, če so vsa predhodna preverjanja uspešna.
+
+Aplikacija uporablja Azure Database for PostgreSQL. Gesla in druge občutljive nastavitve so shranjene ločeno od izvorne kode.
+

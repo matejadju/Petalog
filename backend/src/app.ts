@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import cookieParser from "cookie-parser";
 import express from "express";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -30,6 +32,23 @@ app.use("/api/animals/:id", allergiesRoutes);
 app.use("/api/animals", animalsRoutes);
 app.use("/api/medical-records", medicalRecordsRoutes);
 app.use("/api/vaccinations", dueVaccinationsRoutes);
+
+
+const publicDir = path.resolve(process.cwd(), "public");
+const indexFile = path.join(publicDir, "index.html");
+
+// Neznane API poti morajo vrniti 404.
+app.use("/api", notFoundHandler);
+
+// V produkciji Express streže tudi React aplikacijo.
+if (existsSync(indexFile)) {
+  app.use(express.static(publicDir));
+
+  // React Router ureja poti na strani odjemalca.
+  app.get("/{*splat}", (_req, res) => {
+    res.sendFile(indexFile);
+  });
+}
 
 app.use(notFoundHandler);
 app.use(errorHandler);
